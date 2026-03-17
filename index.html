@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aima Legacy — Marketing + Inteligencia Artificial</title>
+  <meta name="description" content="Agencia de marketing digital e inteligencia artificial. Transformamos marcas con estrategia humana y tecnología IA para resultados extraordinarios.">
+  <meta name="facebook-domain-verification" content="z6kvlovzv1u198fksncypqsdfktax2"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+  /* ═══════════════════════════════════════════════
+     RESET & TOKENS
+  ═══════════════════════════════════════════════ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black:        #04040f;
+    --black-soft:   #07070f;
+    --black-card:   rgba(255,255,255,0.03);
+    --gold:         #c9a84c;
+    --gold-light:   #e2c97e;
+    --gold-dim:     rgba(201,168,76,0.10);
+    --gold-border:  rgba(201,168,76,0.15);
+    --gold-hover:   rgba(201,168,76,0.32);
+    --blue:         #2563eb;
+    --blue-light:   #60a5fa;
+    --cyan:         #06b6d4;
+    --blue-dim:     rgba(37,99,235,0.14);
+    --white:        #f2ede6;
+    --white-dim:    #9e9790;
+    --white-muted:  #5c5753;
+
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+    --font-num:     'Bebas Neue', Impact, sans-serif;
+    --ease:         cubic-bezier(0.25,0.46,0.45,0.94);
+    --ease-o:       cubic-bezier(0.16,1,0.3,1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Nebula background — fixed, full screen */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 75% 55% at 6%  10%, rgba(37,99,235,0.18)  0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 94% 42%, rgba(6,182,212,0.12)  0%, transparent 60%),
+      radial-gradient(ellipse 50% 55% at 50% 96%, rgba(201,168,76,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 45% at 30% 60%, rgba(88,28,135,0.10)  0%, transparent 52%);
+  }
+
+  a   { text-decoration: none; color: inherit; }
+  img { display: block; max-width: 100%; }
+  button { border: none; background: none; font-family: inherit; cursor: none; }
+
+  /* ═══════════════════════════════════════════════
+     CURSOR
+  ═══════════════════════════════════════════════ */
+  .cur-dot {
+    position: fixed; top: 0; left: 0;
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none; z-index: 99999;
+    transform: translate(-50%,-50%);
+    transition: width .15s, height .15s, opacity .15s;
+    will-change: transform;
+  }
+  .cur-ring {
+    position: fixed; top: 0; left: 0;
+    width: 34px; height: 34px;
+    border: 1.5px solid rgba(201,168,76,.45);
+    border-radius: 50%;
+    pointer-events: none; z-index: 99998;
+    transform: translate(-50%,-50%);
+    transition: width .3s var(--ease), height .3s var(--ease), border-color .3s;
+    will-change: transform;
+  }
+  .cur-dot.hover  { width: 14px; height: 14px; }
+  .cur-ring.hover { width: 56px; height: 56px; border-color: var(--gold); }
+  .cur-dot.click  { transform: translate(-50%,-50%) scale(.6); }
+
+  @media (hover: none) {
+    .cur-dot, .cur-ring { display: none; }
+    body, a, button { cursor: auto; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     FIXED BG LAYERS
+  ═══════════════════════════════════════════════ */
+  #bg-canvas {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    opacity: 1;
+  }
+
+  #noise-canvas {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 9997;
+    opacity: .035;
+  }
+
+  .grid-bg {
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(37,99,235,.04)  1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,99,235,.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse at center, transparent 5%, rgba(0,0,0,.65) 60%, black 100%);
+    mask-image:         radial-gradient(ellipse at center, transparent 5%, rgba(0,0,0,.65) 60%, black 100%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ═══════════════════════════════════════════════
+     SCROLL BAR
+  ═══════════════════════════════════════════════ */
+  #scroll-bar {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: linear-gradient(90deg, var(--blue), var(--cyan), var(--gold));
+    z-index: 999999;
+    transition: width .08s linear;
+    box-shadow: 0 0 8px rgba(37,99,235,.55);
+    pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════════════
+     LAYOUT HELPERS
+  ═══════════════════════════════════════════════ */
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+  section { position: relative; z-index: 2; }
+  @media (max-width: 768px) { .wrap { padding: 0 22px; } }
+
+  /* ═══════════════════════════════════════════════
+     SCROLL REVEAL
+  ═══════════════════════════════════════════════ */
+  .sr {
+    opacity: 0;
+    transform: translateY(40px) scale(.98);
+    transition: opacity .9s var(--ease-o), transform .9s var(--ease-o);
+  }
+  .sr.d1 { transition-delay: .08s; }
+  .sr.d2 { transition-delay: .16s; }
+  .sr.d3 { transition-delay: .24s; }
+  .sr.d4 { transition-delay: .32s; }
+  .sr.in { opacity: 1; transform: none; }
+
+  /* ═══════════════════════════════════════════════
+     TYPOGRAPHY ATOMS
+  ═══════════════════════════════════════════════ */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: .68rem; font-weight: 500;
+    letter-spacing: .22em; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .eyebrow::before {
+    content: ''; display: block;
+    width: 32px; height: 1px; background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .sec-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 4vw, 3.6rem);
+    font-weight: 500; line-height: 1.08;
+    letter-spacing: -.01em;
+  }
+  .sec-title em { font-style: italic; color: var(--white); opacity: .72; }
+
+  /* ═══════════════════════════════════════════════
+     BUTTONS
+  ═══════════════════════════════════════════════ */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 30px;
+    font-family: var(--font-body); font-size: .83rem;
+    font-weight: 500; letter-spacing: .05em;
+    border-radius: 2px;
+    transition: all .3s var(--ease);
+    position: relative; overflow: hidden;
+  }
+  .btn-gold { background: var(--gold); color: #080808; }
+  .btn-gold::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+    transform: translateX(-110%);
+    transition: transform .55s;
+  }
+  .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,.3); }
+  .btn-gold:hover::after { transform: translateX(110%); }
+
+  .btn-ghost { border: 1px solid var(--gold-hover); color: var(--gold); }
+  .btn-ghost:hover { background: var(--gold-dim); border-color: var(--gold); transform: translateY(-2px); }
+  .btn-lg { padding: 16px 40px; font-size: .88rem; }
+
+  /* Blue CTA button */
+  .btn-blue {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: #fff; padding: 14px 36px;
+    font-size: .85rem; font-weight: 500; letter-spacing: .05em;
+    border-radius: 3px;
+    box-shadow: 0 4px 24px rgba(37,99,235,.35);
+    transition: all .3s var(--ease);
+  }
+  .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(37,99,235,.5); }
+
+  /* ═══════════════════════════════════════════════
+     NAV
+  ═══════════════════════════════════════════════ */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 48px;
+    transition: padding .4s, background .4s, backdrop-filter .4s, border-color .4s;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.scrolled {
+    padding: 14px 48px;
+    background: rgba(4,4,15,.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-color: rgba(37,99,235,.15);
+  }
+
+  .nav-logo { display: flex; align-items: center; gap: 12px; }
+  .nav-logo-img {
+    height: 38px; width: auto;
+    border-radius: 6px;
+    object-fit: contain;
+  }
+  .nav-logo-text {
+    display: flex; flex-direction: column; line-height: 1.1;
+  }
+  .logo-a {
+    font-family: var(--font-display); font-size: 1.3rem;
+    font-weight: 600; font-style: italic;
+    background: linear-gradient(135deg, var(--blue-light), var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .logo-l {
+    font-family: var(--font-body); font-size: .7rem;
+    font-weight: 300; letter-spacing: .14em; color: var(--white-muted);
+    text-transform: uppercase;
+  }
+
+  .nav-links { display: flex; list-style: none; gap: 44px; }
+  .nav-links a {
+    font-size: .78rem; font-weight: 400;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--white-muted); position: relative;
+    transition: color .3s;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute;
+    bottom: -4px; left: 0; width: 0; height: 1px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    transition: width .3s var(--ease);
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    font-size: .75rem; font-weight: 500;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    padding: 9px 22px; border-radius: 2px;
+    transition: all .3s;
+    box-shadow: 0 2px 16px rgba(37,99,235,.3);
+  }
+  .nav-cta:hover { box-shadow: 0 4px 28px rgba(37,99,235,.5); transform: translateY(-1px); }
+
+  .nav-burger { display: none; flex-direction: column; gap: 5px; padding: 4px; }
+  .nav-burger span { display: block; width: 22px; height: 1.5px; background: var(--white); transition: all .3s; }
+
+  .mobile-nav {
+    position: fixed; inset: 0; z-index: 499;
+    background: rgba(4,4,15,.97); backdrop-filter: blur(20px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 40px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s;
+  }
+  .mobile-nav.open { opacity: 1; pointer-events: all; }
+  .mobile-nav a {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 300; color: var(--white);
+    transition: color .3s;
+  }
+  .mobile-nav a:hover { color: var(--gold); }
+  .mobile-close {
+    position: absolute; top: 28px; right: 28px;
+    font-size: 1.4rem; color: var(--white-muted);
+    transition: color .3s;
+  }
+  .mobile-close:hover { color: var(--gold); }
+
+  @media (max-width: 1024px) {
+    .nav-links, .nav-cta { display: none; }
+    .nav-burger { display: flex; }
+    .nav { padding: 20px 22px; }
+    .nav.scrolled { padding: 14px 22px; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     HERO — SPLIT LAYOUT
+  ═══════════════════════════════════════════════ */
+  .hero {
+    min-height: 100svh;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-main {
+    flex: 1; display: flex; align-items: center;
+    padding: 130px 48px 60px;
+  }
+
+  .hero-split {
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .hero-left { position: relative; }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: .68rem; font-weight: 500;
+    letter-spacing: .24em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 28px;
+    animation: fadeUp 1s var(--ease-o) both;
+  }
+  .hero-eyebrow::before {
+    content: ''; width: 36px; height: 1px; background: var(--gold);
+  }
+
+  .hero-hl {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 5vw, 5.8rem);
+    font-weight: 500; line-height: .97;
+    letter-spacing: -.02em; color: var(--white);
+    margin-bottom: 30px;
+    animation: fadeUp 1s .12s var(--ease-o) both;
+  }
+
+  /* Rotating word */
+  .word-rotate {
+    display: inline-block;
+    font-style: italic;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(201,168,76,.8);
+    position: relative;
+  }
+  .word-rotate.typing::after {
+    content: '';
+    position: absolute;
+    right: -4px; top: 10%; bottom: 10%;
+    width: 2px;
+    background: var(--gold);
+    animation: cursorBlink 0.8s step-end infinite;
+  }
+  @keyframes cursorBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .hero-sub {
+    font-size: 1rem; font-weight: 300;
+    color: var(--white-dim); max-width: 440px;
+    line-height: 1.85; margin-bottom: 40px;
+    animation: fadeUp 1s .22s var(--ease-o) both;
+  }
+
+  .hero-btns {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    animation: fadeUp 1s .32s var(--ease-o) both;
+  }
+
+  /* Floating badge */
+  .hero-live-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    background: rgba(37,99,235,.1);
+    border: 1px solid rgba(37,99,235,.3);
+    border-radius: 100px;
+    font-size: .68rem; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--blue-light);
+    margin-bottom: 22px;
+    animation: fadeUp 1s .02s var(--ease-o) both;
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    background: #22c55e; border-radius: 50%;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  /* ── HERO RIGHT — ORB ── */
+  .hero-right {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 1.4s .3s both;
+  }
+
+  .hero-orb-wrap {
+    position: relative;
+    width: min(460px, 44vw);
+    aspect-ratio: 1;
+  }
+
+  #heroOrbCanvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+  }
+
+  .orb-ring {
+    position: absolute;
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .orb-r1 {
+    width: 90%; height: 90%;
+    border: 1px solid rgba(37,99,235,.22);
+    animation: spinR 28s linear infinite;
+  }
+  .orb-r2 {
+    width: 70%; height: 70%;
+    border: 1px solid rgba(201,168,76,.2);
+    animation: spinR 20s linear infinite reverse;
+  }
+  .orb-r3 {
+    width: 50%; height: 50%;
+    border: 1px solid rgba(6,182,212,.25);
+    animation: spinR 14s linear infinite;
+  }
+  .orb-r4 {
+    width: 30%; height: 30%;
+    border: 2px solid rgba(201,168,76,.4);
+    animation: spinR 9s linear infinite reverse;
+  }
+
+  /* Dot on ring */
+  .orb-r1::after {
+    content: ''; position: absolute;
+    width: 7px; height: 7px;
+    background: var(--blue-light);
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(96,165,250,.9);
+    top: -3px; left: 50%; transform: translateX(-50%);
+  }
+  .orb-r3::after {
+    content: ''; position: absolute;
+    width: 5px; height: 5px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(201,168,76,.9);
+    bottom: -2px; left: 50%; transform: translateX(-50%);
+  }
+
+  .orb-center-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, rgba(37,99,235,.5), rgba(6,182,212,.2), transparent 70%);
+    border-radius: 50%;
+    animation: pulseGlow 3.5s ease-in-out infinite;
+  }
+
+  /* Floating metric cards */
+  .float-card {
+    position: absolute;
+    background: rgba(4,4,15,.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.08);
+    border-top: 1px solid rgba(255,255,255,.14);
+    border-radius: 12px;
+    padding: 14px 20px;
+    min-width: 155px;
+    z-index: 10;
+  }
+  .float-card-1 { top: 6%;  right: -8%; animation: floatA 6s ease-in-out infinite; }
+  .float-card-2 { bottom: 20%; left: -10%; animation: floatA 7s ease-in-out infinite; animation-delay: -2.5s; }
+  .float-card-3 { bottom: 5%; right: 2%; animation: floatA 5.5s ease-in-out infinite; animation-delay: -1.5s; }
+
+  .fc-val {
+    font-family: var(--font-num);
+    font-size: 1.9rem; color: var(--gold);
+    line-height: 1; display: block;
+  }
+  .fc-val.blue {
+    background: linear-gradient(135deg, var(--blue-light), var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .fc-lbl {
+    font-size: .68rem; color: var(--white-muted);
+    letter-spacing: .08em; text-transform: uppercase; margin-top: 4px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .fc-lbl::before {
+    content: ''; width: 5px; height: 5px;
+    background: #22c55e; border-radius: 50%;
+    flex-shrink: 0;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  /* Stats strip */
+  .hero-stats {
+    border-top: 1px solid rgba(255,255,255,.06);
+    padding: 0 48px;
+    animation: fadeIn 1.4s .55s both;
+    background: rgba(255,255,255,.015);
+    backdrop-filter: blur(10px);
+    position: relative; z-index: 2;
+  }
+  .hero-stats-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex;
+  }
+  .stat {
+    flex: 1; padding: 28px 40px 28px 0;
+    border-right: 1px solid rgba(255,255,255,.06);
+  }
+  .stat:first-child { padding-left: 0; }
+  .stat:last-child  { border-right: none; }
+  .stat:not(:first-child) { padding-left: 40px; }
+  .stat-n {
+    display: block;
+    font-family: var(--font-num);
+    font-size: clamp(2.2rem, 3.5vw, 3.5rem);
+    line-height: 1; margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-l {
+    display: block;
+    font-size: .72rem; font-weight: 400;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--white-muted);
+  }
+
+  @media (max-width: 1024px) {
+    .hero-split { grid-template-columns: 1fr; gap: 60px; }
+    .hero-right  { display: none; }
+    .hero-main   { padding: 120px 22px 50px; }
+    .hero-stats  { padding: 0 22px; }
+    .hero-stats-inner { flex-direction: column; }
+    .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,.06); padding: 20px 0 !important; }
+    .stat:last-child { border-bottom: none; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     MARQUEE — PLATFORMS
+  ═══════════════════════════════════════════════ */
+  .marquee-section {
+    padding: 36px 0; z-index: 2; position: relative;
+    border-top: 1px solid rgba(255,255,255,.05);
+    border-bottom: 1px solid rgba(255,255,255,.05);
+    background: rgba(255,255,255,.012);
+    backdrop-filter: blur(4px);
+  }
+  .marquee-label {
+    text-align: center; margin-bottom: 22px;
+    font-size: .62rem; letter-spacing: .24em; text-transform: uppercase;
+    color: var(--white-muted);
+  }
+  .marquee-overflow {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+  }
+  .marquee-track {
+    display: flex; align-items: center; gap: 36px;
+    width: max-content;
+    animation: marqueeScroll 38s linear infinite;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+  .m-item {
+    font-family: var(--font-num); font-size: 1.1rem;
+    letter-spacing: .16em; color: var(--white-muted);
+    white-space: nowrap; transition: color .3s;
+    cursor: default;
+  }
+  .m-item:hover { color: var(--gold); }
+  .m-dot { color: var(--blue); font-size: .4rem; opacity: .5; flex-shrink: 0; }
+
+  /* ═══════════════════════════════════════════════
+     SERVICES
+  ═══════════════════════════════════════════════ */
+  .services { padding: 140px 48px; }
+
+  .services-hd { text-align: center; margin-bottom: 80px; }
+  .services-hd .eyebrow { justify-content: center; margin-bottom: 18px; }
+  .services-hd .eyebrow::before { display: none; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    max-width: 1200px; margin: 0 auto;
+  }
+
+  .card {
+    background: rgba(255,255,255,.028);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,.06);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 50px 48px;
+    position: relative; overflow: hidden;
+    transition: border-color .4s var(--ease), transform .4s var(--ease), background .4s, box-shadow .4s;
+    transform-style: preserve-3d;
+  }
+  .card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top left, rgba(37,99,235,.08) 0%, transparent 55%);
+    opacity: 0; transition: opacity .4s;
+  }
+  .card:hover {
+    background: rgba(255,255,255,.042);
+    border-color: rgba(201,168,76,.25);
+    transform: translateY(-6px);
+    box-shadow: 0 24px 60px rgba(0,0,0,.4), 0 0 40px rgba(37,99,235,.06);
+  }
+  .card:hover::before { opacity: 1; }
+
+  .card-num {
+    position: absolute; top: 38px; right: 46px;
+    font-family: var(--font-num); font-size: 4.5rem;
+    color: rgba(201,168,76,.05); line-height: 1;
+    transition: color .4s;
+  }
+  .card:hover .card-num { color: rgba(201,168,76,.1); }
+
+  .card-icon {
+    width: 52px; height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(37,99,235,.15), rgba(6,182,212,.08));
+    border: 1px solid rgba(37,99,235,.25);
+    border-radius: 10px; margin-bottom: 28px;
+    color: var(--blue-light);
+    transition: background .3s, border-color .3s, color .3s;
+  }
+  .card:hover .card-icon {
+    background: linear-gradient(135deg, rgba(37,99,235,.25), rgba(6,182,212,.15));
+    border-color: rgba(37,99,235,.45);
+    color: var(--cyan);
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.75rem; font-weight: 500;
+    color: var(--white); margin-bottom: 14px; line-height: 1.2;
+  }
+  .card-desc {
+    font-size: .875rem; color: var(--white-dim);
+    line-height: 1.75; margin-bottom: 28px;
+  }
+  .card-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: .73rem; font-weight: 500;
+    letter-spacing: .1em; text-transform: uppercase;
+    background: linear-gradient(135deg, var(--blue-light), var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0; transform: translateX(-10px);
+    transition: opacity .35s var(--ease), transform .35s var(--ease);
+  }
+  .card:hover .card-link { opacity: 1; transform: none; }
+
+  @media (max-width: 768px) {
+    .services { padding: 100px 22px; }
+    .cards { grid-template-columns: 1fr; }
+    .card { padding: 36px 28px; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     MANIFIESTO — nueva sección
+  ═══════════════════════════════════════════════ */
+  .manifesto {
+    padding: 120px 48px;
+    position: relative;
+    background: rgba(255,255,255,.012);
+    border-top: 1px solid rgba(255,255,255,.05);
+    border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .manifesto-inner {
+    max-width: 900px; margin: 0 auto;
+    text-align: center;
+  }
+  .manifesto-quote {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--white);
+    margin-bottom: 48px;
+    letter-spacing: -.01em;
+  }
+  .manifesto-quote strong {
+    font-weight: 600;
+    font-style: normal;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .manifesto-pills {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    justify-content: center; margin-top: 48px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255,255,255,.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 100px;
+    font-size: .78rem; color: var(--white-dim);
+    letter-spacing: .06em;
+    transition: all .3s;
+  }
+  .pill:hover { border-color: var(--gold-border); color: var(--white); }
+  .pill-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%; flex-shrink: 0;
+  }
+  .pill-dot.blue { background: var(--blue-light); }
+  .pill-dot.gold { background: var(--gold); }
+  .pill-dot.cyan { background: var(--cyan); }
+
+  .manifesto-line {
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, transparent, rgba(201,168,76,.4), transparent);
+    margin: 0 auto 36px;
+  }
+
+  @media (max-width: 768px) { .manifesto { padding: 80px 22px; } }
+
+  /* ═══════════════════════════════════════════════
+     AI STACK — herramientas reales
+  ═══════════════════════════════════════════════ */
+  .stack-sec {
+    padding: 120px 48px;
+    position: relative; z-index: 2;
+  }
+  .stack-hd {
+    margin-bottom: 70px;
+  }
+  .stack-hd .eyebrow { margin-bottom: 16px; }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1200px; margin: 0 auto;
+  }
+
+  .stack-card {
+    background: rgba(255,255,255,.025);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 12px;
+    padding: 32px 30px;
+    transition: all .35s var(--ease);
+    position: relative; overflow: hidden;
+  }
+  .stack-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(37,99,235,.06), transparent);
+    opacity: 0; transition: opacity .35s;
+    border-radius: inherit;
+  }
+  .stack-card:hover {
+    border-color: rgba(37,99,235,.3);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0,0,0,.3), 0 0 30px rgba(37,99,235,.08);
+  }
+  .stack-card:hover::after { opacity: 1; }
+
+  .stack-cat {
+    font-size: .64rem; font-weight: 500;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: var(--blue-light); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stack-cat::before {
+    content: ''; width: 20px; height: 1px;
+    background: var(--blue-light);
+  }
+
+  .stack-tools {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .stack-tool {
+    display: flex; align-items: center; gap: 12px;
+    font-size: .875rem; color: var(--white-dim);
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.05);
+    transition: all .25s;
+  }
+  .stack-tool:hover { color: var(--white); border-color: rgba(255,255,255,.1); }
+  .stack-tool-icon {
+    width: 30px; height: 30px; flex-shrink: 0;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700; font-family: var(--font-body);
+  }
+  .ti-blue { background: rgba(37,99,235,.2); color: var(--blue-light); border: 1px solid rgba(37,99,235,.3); }
+  .ti-cyan { background: rgba(6,182,212,.15); color: var(--cyan); border: 1px solid rgba(6,182,212,.3); }
+  .ti-gold { background: rgba(201,168,76,.15); color: var(--gold); border: 1px solid rgba(201,168,76,.3); }
+  .ti-green { background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+  .ti-purple { background: rgba(139,92,246,.15); color: #a78bfa; border: 1px solid rgba(139,92,246,.3); }
+  .ti-red { background: rgba(239,68,68,.15); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+
+  .stack-tool-name { flex: 1; }
+  .stack-tool-tag {
+    font-size: .62rem; color: var(--white-muted);
+    letter-spacing: .08em; text-transform: uppercase;
+    opacity: .7;
+  }
+
+  @media (max-width: 900px) {
+    .stack-sec { padding: 80px 22px; }
+    .stack-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     PROCESS
+  ═══════════════════════════════════════════════ */
+  .process {
+    padding: 100px 48px 140px;
+    position: relative;
+    background:
+      linear-gradient(180deg, var(--black) 0%, var(--black-soft) 50%, var(--black) 100%);
+  }
+  .process::before, .process::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(37,99,235,.3), rgba(201,168,76,.3), transparent);
+  }
+  .process::before { top: 0; }
+  .process::after  { bottom: 0; }
+
+  .process-hd { margin-bottom: 80px; }
+  .process-hd .eyebrow { margin-bottom: 16px; }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0; max-width: 1200px; margin: 0 auto;
+    position: relative;
+  }
+  .steps::before {
+    content: ''; position: absolute;
+    top: 28px; left: calc(12.5% + 10px); right: calc(12.5% + 10px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(37,99,235,.3), rgba(201,168,76,.3), transparent);
+  }
+
+  .step { padding: 0 32px 0 0; }
+  .step:last-child { padding-right: 0; }
+
+  .step-n {
+    font-family: var(--font-num);
+    font-size: 3.5rem; line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(37,99,235,.35);
+    margin-bottom: 28px;
+    transition: -webkit-text-stroke-color .35s;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .step-n::after {
+    content: ''; flex-shrink: 0;
+    width: 8px; height: 8px;
+    background: rgba(37,99,235,.4);
+    border: 1px solid var(--blue);
+    border-radius: 50%;
+  }
+  .step:hover .step-n { -webkit-text-stroke-color: rgba(37,99,235,.7); }
+
+  .step-t {
+    font-family: var(--font-display);
+    font-size: 1.45rem; font-weight: 500;
+    color: var(--white); margin-bottom: 12px;
+  }
+  .step-d { font-size: .875rem; color: var(--white-muted); line-height: 1.7; }
+
+  @media (max-width: 900px) {
+    .process { padding: 80px 22px 100px; }
+    .steps { grid-template-columns: 1fr 1fr; gap: 52px 32px; }
+    .steps::before { display: none; }
+    .step { padding: 0; }
+    .step-n::after { display: none; }
+  }
+  @media (max-width: 500px) { .steps { grid-template-columns: 1fr; } }
+
+  /* ═══════════════════════════════════════════════
+     FAQ
+  ═══════════════════════════════════════════════ */
+  .faq-sec { padding: 140px 48px; position: relative; z-index: 2; }
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.65fr;
+    gap: 80px; align-items: start;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .faq-list { display: flex; flex-direction: column; }
+  .faq-item { border-bottom: 1px solid rgba(255,255,255,.06); }
+  .faq-item:first-child { border-top: 1px solid rgba(255,255,255,.06); }
+
+  .faq-btn {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 0; gap: 16px;
+    font-family: var(--font-display); font-size: 1.1rem; font-weight: 500;
+    color: var(--white); text-align: left; transition: color .3s;
+  }
+  .faq-btn:hover { color: var(--blue-light); }
+  .faq-chevron {
+    width: 30px; height: 30px; flex-shrink: 0;
+    border: 1px solid rgba(37,99,235,.3); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--blue-light); font-size: 1.1rem; line-height: 1;
+    transition: all .35s var(--ease); font-family: var(--font-body);
+  }
+  .faq-item.faq-open .faq-chevron {
+    background: var(--blue-dim); border-color: var(--blue);
+    transform: rotate(45deg);
+  }
+  .faq-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .42s var(--ease-o); }
+  .faq-item.faq-open .faq-body { grid-template-rows: 1fr; }
+  .faq-body-inner { overflow: hidden; font-size: .88rem; color: var(--white-muted); line-height: 1.85; }
+  .faq-body-inner p { padding-bottom: 22px; }
+
+  @media (max-width: 900px) {
+    .faq-sec { padding: 100px 22px; }
+    .faq-grid { grid-template-columns: 1fr; gap: 48px; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     CTA
+  ═══════════════════════════════════════════════ */
+  .cta-sec {
+    padding: 120px 48px;
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse 90% 120% at 50% 50%, rgba(37,99,235,.10) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 60% at 0% 55%, rgba(22,8,65,.5) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 60% at 100% 55%, rgba(6,182,212,.06) 0%, transparent 50%),
+      linear-gradient(180deg, var(--black) 0%, #050510 50%, var(--black) 100%);
+  }
+  .cta-sec::before, .cta-sec::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blue), var(--cyan), transparent);
+  }
+  .cta-sec::before { top: 0; }
+  .cta-sec::after  { bottom: 0; }
+
+  .cta-inner {
+    max-width: 680px; margin: 0 auto;
+    text-align: center; position: relative; z-index: 1;
+  }
+  .cta-ey {
+    font-size: .68rem; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--blue-light);
+    font-weight: 500; margin-bottom: 22px;
+  }
+  .cta-hl {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 5vw, 4.8rem);
+    font-weight: 500; line-height: 1.08;
+    color: var(--white); margin-bottom: 20px;
+  }
+  .cta-hl em { font-style: italic; color: var(--gold-light); }
+  .cta-sub {
+    font-size: .975rem; color: var(--white-dim);
+    line-height: 1.75; max-width: 480px;
+    margin: 0 auto 40px;
+  }
+  .cta-fine { margin-top: 16px; font-size: .75rem; color: var(--white-muted); }
+  .cta-fine span { color: var(--gold); }
+
+  @media (max-width: 768px) { .cta-sec { padding: 80px 22px; } }
+
+  /* ═══════════════════════════════════════════════
+     FOOTER
+  ═══════════════════════════════════════════════ */
+  .footer {
+    padding: 80px 48px 44px;
+    border-top: 1px solid rgba(255,255,255,.06);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 64px;
+    max-width: 1200px; margin: 0 auto 64px;
+  }
+  .footer-tag {
+    font-size: .875rem; color: var(--white-muted);
+    line-height: 1.7; max-width: 260px; margin-top: 14px;
+  }
+  .footer-logo { margin-bottom: 4px; }
+
+  .col-hd {
+    font-size: .65rem; font-weight: 500;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--blue-light); margin-bottom: 20px;
+  }
+  .foot-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .foot-links a { font-size: .875rem; color: var(--white-muted); transition: color .3s; }
+  .foot-links a:hover { color: var(--white); }
+
+  .socials { display: flex; gap: 12px; margin-top: 4px; }
+  .soc {
+    width: 38px; height: 38px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--white-muted);
+    transition: all .3s;
+  }
+  .soc:hover { border-color: var(--blue); color: var(--blue-light); background: var(--blue-dim); }
+
+  .foot-bot {
+    max-width: 1200px; margin: 0 auto;
+    padding-top: 32px; border-top: 1px solid rgba(255,255,255,.06);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .foot-cp { font-size: .78rem; color: var(--white-muted); }
+  .foot-cp span { color: var(--gold); }
+
+  @media (max-width: 768px) {
+    .footer { padding: 60px 22px 36px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+    .foot-bot { flex-direction: column; gap: 10px; text-align: center; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     KEYFRAMES
+  ═══════════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes spinR {
+    from { transform: translate(-50%,-50%) rotate(0); }
+    to   { transform: translate(-50%,-50%) rotate(360deg); }
+  }
+  @keyframes pulseGlow {
+    0%,100% { transform: translate(-50%,-50%) scale(1); opacity: .7; }
+    50%      { transform: translate(-50%,-50%) scale(1.25); opacity: 1; }
+  }
+  @keyframes floatA {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-18px); }
+  }
+  @keyframes blink {
+    0%,100% { opacity: 1; }
+    50%      { opacity: .3; }
+  }
+  @keyframes marqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  </style>
+</head>
+<body>
+
+<!-- ─── SCROLL PROGRESS ─────────────────────── -->
+<div id="scroll-bar"></div>
+
+<!-- ─── CUSTOM CURSOR ───────────────────────── -->
+<div class="cur-dot"  id="curDot"></div>
+<div class="cur-ring" id="curRing"></div>
+
+<!-- ─── NEURAL BACKGROUND CANVAS ───────────── -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ─── GRID OVERLAY ────────────────────────── -->
+<div class="grid-bg"></div>
+
+<!-- ─── NOISE ───────────────────────────────── -->
+<canvas id="noise-canvas"></canvas>
+
+<!-- ─── MOBILE NAV ──────────────────────────── -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" id="mobileClose" aria-label="Cerrar">✕</button>
+  <a href="#servicios">Servicios</a>
+  <a href="#stack">Stack IA</a>
+  <a href="#proceso">Proceso</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contacto">Contacto</a>
+  <a href="#contacto" class="btn btn-blue" style="margin-top:16px;border-radius:3px;">Trabajemos Juntos</a>
+</div>
+
+<!-- ─── NAV ─────────────────────────────────── -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">
+    <img src="logo-aima.jpg" alt="Aima Legacy" class="nav-logo-img"/>
+    <div class="nav-logo-text">
+      <span class="logo-a">Aima</span>
+      <span class="logo-l">Legacy</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#stack">Stack IA</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Trabajemos Juntos</a>
+  <button class="nav-burger" id="navBurger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-main">
+    <div class="hero-split">
+
+      <!-- LEFT -->
+      <div class="hero-left">
+        <div class="hero-live-badge">
+          <span class="live-dot"></span>
+          Agencia activa · Marketing + IA
+        </div>
+        <div class="hero-eyebrow">Resultados extraordinarios</div>
+        <h1 class="hero-hl">
+          Tu marca<br>
+          merece un<br>
+          <span class="word-rotate" id="wordRotate">legado.</span>
+        </h1>
+        <p class="hero-sub">
+          Combinamos estrategia humana con inteligencia artificial
+          para transformar marcas que dejan huella en su industria.
+        </p>
+        <div class="hero-btns">
+          <a href="#contacto" class="btn btn-blue">Agenda una llamada &nbsp;→</a>
+          <a href="#servicios" class="btn btn-ghost">Ver servicios</a>
+        </div>
+      </div>
+
+      <!-- RIGHT — animated orb -->
+      <div class="hero-right">
+        <div class="hero-orb-wrap">
+          <canvas id="heroOrbCanvas"></canvas>
+          <div class="orb-ring orb-r1"></div>
+          <div class="orb-ring orb-r2"></div>
+          <div class="orb-ring orb-r3"></div>
+          <div class="orb-ring orb-r4"></div>
+          <div class="orb-center-glow"></div>
+
+          <!-- Floating cards -->
+          <div class="float-card float-card-1">
+            <span class="fc-val blue">8x</span>
+            <span class="fc-lbl">ROI promedio</span>
+          </div>
+          <div class="float-card float-card-2">
+            <span class="fc-val">+150</span>
+            <span class="fc-lbl">Marcas transformadas</span>
+          </div>
+          <div class="float-card float-card-3">
+            <span class="fc-val blue">$2M+</span>
+            <span class="fc-lbl">Revenue generado</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="hero-stats">
+    <div class="hero-stats-inner">
+      <div class="stat">
+        <span class="stat-n" data-target="150" data-prefix="+" data-suffix="">+150</span>
+        <span class="stat-l">Marcas transformadas</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n" data-target="8" data-prefix="" data-suffix="x">8x</span>
+        <span class="stat-l">ROI promedio</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n" data-target="2" data-prefix="$" data-suffix="M+">$2M+</span>
+        <span class="stat-l">Revenue generado</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PLATFORMS MARQUEE ──────────────────────── -->
+<div class="marquee-section">
+  <p class="marquee-label">Plataformas que dominamos</p>
+  <div class="marquee-overflow">
+    <div class="marquee-track">
+      <span class="m-item">META ADS</span><span class="m-dot">◆</span>
+      <span class="m-item">GOOGLE ADS</span><span class="m-dot">◆</span>
+      <span class="m-item">TIKTOK</span><span class="m-dot">◆</span>
+      <span class="m-item">OPENAI</span><span class="m-dot">◆</span>
+      <span class="m-item">N8N</span><span class="m-dot">◆</span>
+      <span class="m-item">INSTAGRAM</span><span class="m-dot">◆</span>
+      <span class="m-item">LINKEDIN</span><span class="m-dot">◆</span>
+      <span class="m-item">HUBSPOT</span><span class="m-dot">◆</span>
+      <span class="m-item">MAKE</span><span class="m-dot">◆</span>
+      <span class="m-item">CLAUDE AI</span><span class="m-dot">◆</span>
+      <!-- duplicate -->
+      <span class="m-item">META ADS</span><span class="m-dot">◆</span>
+      <span class="m-item">GOOGLE ADS</span><span class="m-dot">◆</span>
+      <span class="m-item">TIKTOK</span><span class="m-dot">◆</span>
+      <span class="m-item">OPENAI</span><span class="m-dot">◆</span>
+      <span class="m-item">N8N</span><span class="m-dot">◆</span>
+      <span class="m-item">INSTAGRAM</span><span class="m-dot">◆</span>
+      <span class="m-item">LINKEDIN</span><span class="m-dot">◆</span>
+      <span class="m-item">HUBSPOT</span><span class="m-dot">◆</span>
+      <span class="m-item">MAKE</span><span class="m-dot">◆</span>
+      <span class="m-item">CLAUDE AI</span><span class="m-dot">◆</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SERVICES
+══════════════════════════════════════════ -->
+<section class="services" id="servicios">
+  <div class="services-hd sr">
+    <div class="eyebrow">Lo que hacemos</div>
+    <h2 class="sec-title" style="margin-top:16px;">
+      Servicios diseñados<br>para <em>resultados reales</em>
+    </h2>
+  </div>
+  <div class="cards">
+
+    <div class="card sr d1">
+      <div class="card-num">01</div>
+      <div class="card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <h3 class="card-title">Marketing Digital 360°</h3>
+      <p class="card-desc">Estrategia integral que abarca todos los canales: SEO, redes sociales, email marketing y contenido coordinados para maximizar tu impacto y visibilidad online.</p>
+      <div class="card-link">Explorar servicio <span>→</span></div>
+    </div>
+
+    <div class="card sr d2">
+      <div class="card-num">02</div>
+      <div class="card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+      </div>
+      <h3 class="card-title">Automatización con IA</h3>
+      <p class="card-desc">Implementamos flujos de trabajo inteligentes que operan 24/7. Desde chatbots avanzados hasta análisis predictivo, tu negocio escala sin límites humanos.</p>
+      <div class="card-link">Explorar servicio <span>→</span></div>
+    </div>
+
+    <div class="card sr d3">
+      <div class="card-num">03</div>
+      <div class="card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+      </div>
+      <h3 class="card-title">Contenido & Branding</h3>
+      <p class="card-desc">Construimos identidades de marca que perduran en la memoria. Copywriting estratégico, diseño visual cohesivo y narrativa que conecta con tu audiencia ideal.</p>
+      <div class="card-link">Explorar servicio <span>→</span></div>
+    </div>
+
+    <div class="card sr d4">
+      <div class="card-num">04</div>
+      <div class="card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+      </div>
+      <h3 class="card-title">Ads & Performance</h3>
+      <p class="card-desc">Campañas de paid media optimizadas con IA para el máximo retorno. Google, Meta, TikTok y LinkedIn gestionados por expertos obsesionados con el ROI.</p>
+      <div class="card-link">Explorar servicio <span>→</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     MANIFIESTO
+══════════════════════════════════════════ -->
+<section class="manifesto">
+  <div class="manifesto-inner sr">
+    <div class="manifesto-line"></div>
+    <p class="manifesto-quote">
+      No creemos en el marketing ruidoso.<br>
+      Creemos en la <strong>estrategia silenciosa</strong> que construye marcas
+      tan sólidas que el mercado no puede ignorarlas.
+    </p>
+    <div class="manifesto-line"></div>
+    <div class="manifesto-pills">
+      <div class="pill"><span class="pill-dot blue"></span> Datos sobre intuición</div>
+      <div class="pill"><span class="pill-dot gold"></span> Velocidad de IA, alma humana</div>
+      <div class="pill"><span class="pill-dot cyan"></span> Resultados medibles</div>
+      <div class="pill"><span class="pill-dot blue"></span> Sin contratos tramposos</div>
+      <div class="pill"><span class="pill-dot gold"></span> Transparencia total</div>
+      <div class="pill"><span class="pill-dot cyan"></span> Obsesión por el ROI</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     STACK DE IA
+══════════════════════════════════════════ -->
+<section class="stack-sec" id="stack">
+  <div class="wrap">
+    <div class="stack-hd sr">
+      <div class="eyebrow">Tecnología real</div>
+      <h2 class="sec-title" style="margin-top:16px; max-width:500px;">
+        Las herramientas que<br>usamos <em>cada día</em>
+      </h2>
+      <p style="margin-top:20px; font-size:.9rem; color:var(--white-muted); max-width:460px; line-height:1.7;">
+        Sin humo. Estas son las plataformas reales con las que construimos
+        resultados para nuestros clientes.
+      </p>
+    </div>
+    <div class="stack-grid">
+
+      <!-- Paid Ads -->
+      <div class="stack-card sr d1">
+        <div class="stack-cat">Paid Advertising</div>
+        <div class="stack-tools">
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-blue">M</span>
+            <span class="stack-tool-name">Meta Ads</span>
+            <span class="stack-tool-tag">Facebook · IG</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-red">G</span>
+            <span class="stack-tool-name">Google Ads</span>
+            <span class="stack-tool-tag">Search · PMax</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-purple">TT</span>
+            <span class="stack-tool-name">TikTok Ads</span>
+            <span class="stack-tool-tag">Performance</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-blue">Li</span>
+            <span class="stack-tool-name">LinkedIn Ads</span>
+            <span class="stack-tool-tag">B2B</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- IA & Automatización -->
+      <div class="stack-card sr d2">
+        <div class="stack-cat">IA & Automatización</div>
+        <div class="stack-tools">
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-green">AI</span>
+            <span class="stack-tool-name">OpenAI GPT-4o</span>
+            <span class="stack-tool-tag">Contenido · copy</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-cyan">Cl</span>
+            <span class="stack-tool-name">Claude AI</span>
+            <span class="stack-tool-tag">Estrategia · análisis</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-blue">n8</span>
+            <span class="stack-tool-name">n8n</span>
+            <span class="stack-tool-tag">Flujos automáticos</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-gold">Mk</span>
+            <span class="stack-tool-name">Make / Zapier</span>
+            <span class="stack-tool-tag">Integraciones</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRM & Analytics -->
+      <div class="stack-card sr d3">
+        <div class="stack-cat">CRM & Analytics</div>
+        <div class="stack-tools">
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-gold">Hs</span>
+            <span class="stack-tool-name">HubSpot</span>
+            <span class="stack-tool-tag">CRM · pipelines</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-blue">GA</span>
+            <span class="stack-tool-name">Google Analytics 4</span>
+            <span class="stack-tool-tag">Datos · eventos</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-cyan">Ph</span>
+            <span class="stack-tool-name">PostHog</span>
+            <span class="stack-tool-tag">Product analytics</span>
+          </div>
+          <div class="stack-tool">
+            <span class="stack-tool-icon ti-green">NT</span>
+            <span class="stack-tool-name">Notion + Sheets</span>
+            <span class="stack-tool-tag">Reportes · dashboards</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PROCESS
+══════════════════════════════════════════ -->
+<section class="process" id="proceso">
+  <div class="wrap">
+    <div class="process-hd sr">
+      <div class="eyebrow">Cómo trabajamos</div>
+      <h2 class="sec-title" style="margin-top:16px; max-width:440px;">
+        Un proceso <em>probado</em><br>para escalar
+      </h2>
+    </div>
+    <div class="steps">
+
+      <div class="step sr d1">
+        <div class="step-n">01</div>
+        <h3 class="step-t">Diagnóstico</h3>
+        <p class="step-d">Analizamos tu marca, audiencia y competencia con herramientas IA para identificar exactamente dónde está la mayor oportunidad de crecimiento.</p>
+      </div>
+
+      <div class="step sr d2">
+        <div class="step-n">02</div>
+        <h3 class="step-t">Estrategia</h3>
+        <p class="step-d">Diseñamos un plan personalizado, medible y ejecutable. Sin genéricos, sin plantillas — tu negocio, tu estrategia, tus objetivos.</p>
+      </div>
+
+      <div class="step sr d3">
+        <div class="step-n">03</div>
+        <h3 class="step-t">Ejecución</h3>
+        <p class="step-d">Implementamos con velocidad y precisión. Nuestro equipo combinado con IA trabaja en paralelo para entregar resultados en semanas, no meses.</p>
+      </div>
+
+      <div class="step sr d4">
+        <div class="step-n">04</div>
+        <h3 class="step-t">Escala</h3>
+        <p class="step-d">Analizamos datos en tiempo real, optimizamos continuamente y multiplicamos todo lo que funciona. El crecimiento no tiene techo.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FAQ
+══════════════════════════════════════════ -->
+<section class="faq-sec" id="faq">
+  <div class="faq-grid">
+
+    <div class="faq-hd sr">
+      <div class="eyebrow">Preguntas frecuentes</div>
+      <h2 class="sec-title" style="margin-top:16px;">
+        Resolvemos<br>tus <em>dudas</em>
+      </h2>
+      <p style="margin-top:22px; font-size:.88rem; color:var(--white-muted); line-height:1.8; max-width:300px;">
+        ¿Tienes más preguntas? Escríbenos a<br>
+        <a href="mailto:hola@aimalegacy.com" style="color:var(--blue-light);">hola@aimalegacy.com</a>
+      </p>
+    </div>
+
+    <div class="faq-list sr d1">
+
+      <div class="faq-item">
+        <button class="faq-btn" type="button">
+          ¿Cuánto cuesta trabajar con Aima Legacy?
+          <span class="faq-chevron">+</span>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p>Cada proyecto es diferente. El precio varía según el alcance, los servicios y los objetivos. Ofrecemos una consultoría gratuita donde evaluamos tu situación y presentamos una propuesta personalizada sin compromisos.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" type="button">
+          ¿En cuánto tiempo veré resultados?
+          <span class="faq-chevron">+</span>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p>Los primeros resultados tangibles suelen aparecer entre las semanas 2 y 6 según el servicio. Las campañas de paid media muestran ROI desde el primer mes; SEO y branding construyen resultados sólidos a partir de los 90 días.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" type="button">
+          ¿Cómo integráis la IA en el marketing?
+          <span class="faq-chevron">+</span>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p>Usamos IA para análisis predictivo, generación y optimización de contenido, automatización de flujos de captación y segmentación avanzada de audiencias. La IA multiplica velocidad y precisión sin reemplazar la estrategia humana.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" type="button">
+          ¿Trabajáis con cualquier tipo de negocio?
+          <span class="faq-chevron">+</span>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p>Trabajamos principalmente con marcas B2B, servicios profesionales, ecommerce premium y startups en fase de crecimiento. Si tu negocio tiene potencial y ambición de escalar, somos el equipo adecuado.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" type="button">
+          ¿Firmo un contrato de permanencia?
+          <span class="faq-chevron">+</span>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p>No imponemos contratos de permanencia forzada. Trabajamos con compromisos mínimos de 3 meses para que la estrategia madure correctamente, pero confiamos en que los resultados serán el mejor motivo para continuar juntos.</p>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="cta-sec" id="contacto">
+  <div class="cta-inner sr">
+    <p class="cta-ey">Empieza hoy</p>
+    <h2 class="cta-hl">
+      ¿Listo para construir<br>
+      tu <em>legado digital?</em>
+    </h2>
+    <p class="cta-sub">
+      Cada día que esperas es una oportunidad que aprovecha tu competencia.
+      Hablemos hoy y diseñemos juntos la estrategia que tu marca merece.
+    </p>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+      <a href="mailto:hola@aimalegacy.com" class="btn btn-blue btn-lg">
+        Quiero una Estrategia Gratis &nbsp;→
+      </a>
+      <p class="cta-fine">Sin compromisos. Primera consulta <span>100% gratuita.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-grid">
+
+    <div>
+      <div class="footer-logo nav-logo">
+        <img src="logo-aima.jpg" alt="Aima Legacy" class="nav-logo-img"/>
+        <div class="nav-logo-text">
+          <span class="logo-a">Aima</span>
+          <span class="logo-l">Legacy</span>
+        </div>
+      </div>
+      <p class="footer-tag">
+        Transformamos marcas con la combinación perfecta de estrategia
+        humana e inteligencia artificial para resultados extraordinarios.
+      </p>
+    </div>
+
+    <div>
+      <p class="col-hd">Navegación</p>
+      <ul class="foot-links">
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#stack">Stack IA</a></li>
+        <li><a href="#proceso">Proceso</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="col-hd">Síguenos</p>
+      <div class="socials">
+        <a href="#" class="soc" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+        <a href="#" class="soc" aria-label="LinkedIn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/>
+            <rect x="2" y="9" width="4" height="12"/>
+            <circle cx="4" cy="4" r="2"/>
+          </svg>
+        </a>
+        <a href="#" class="soc" aria-label="X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <a href="#" class="soc" aria-label="TikTok">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.24 8.24 0 004.83 1.56V6.81a4.85 4.85 0 01-1.06-.12z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+  <div class="foot-bot">
+    <p class="foot-cp">© 2026 <span>Aima Legacy</span>. Todos los derechos reservados.</p>
+    <p class="foot-cp" style="font-size:.72rem;letter-spacing:.05em;">Marketing + IA · Resultados Extraordinarios</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── NOISE ─────────────────────────────────────────── */
+  const nc = document.getElementById('noise-canvas');
+  const nw = 220, nh = 220;
+  nc.width = nw; nc.height = nh;
+  const nctx = nc.getContext('2d');
+  const id = nctx.createImageData(nw, nh);
+  const d  = id.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const v = Math.random() * 255 | 0;
+    d[i] = d[i+1] = d[i+2] = v; d[i+3] = 16;
+  }
+  nctx.putImageData(id, 0, 0);
+  nc.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9997;opacity:.04;background:url(' + nc.toDataURL() + ')';
+  nc.width = 0; nc.height = 0;
+
+  /* ── NEURAL NETWORK BACKGROUND ─────────────────────── */
+  (function () {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx    = canvas.getContext('2d');
+    let W, H, nodes;
+    let mouseX = -999, mouseY = -999;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      nodes = Array.from({ length: 90 }, () => ({
+        x:  Math.random() * W,
+        y:  Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r:  Math.random() * 1.8 + 0.6,
+        gold: Math.random() < 0.25,
+        a:  Math.random()
+      }));
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; }, { passive: true });
+
+    let hidden = false;
+    document.addEventListener('visibilitychange', () => { hidden = document.hidden; });
+
+    const MAX_D = 150;
+
+    function draw() {
+      if (!hidden) {
+        ctx.clearRect(0, 0, W, H);
+
+        for (let i = 0; i < nodes.length; i++) {
+          const a = nodes[i];
+          for (let j = i + 1; j < nodes.length; j++) {
+            const b  = nodes[j];
+            const dx = a.x - b.x, dy = a.y - b.y;
+            const d  = Math.sqrt(dx * dx + dy * dy);
+            if (d < MAX_D) {
+              const alpha = (1 - d / MAX_D) * 0.18;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = a.gold || b.gold
+                ? `rgba(201,168,76,${alpha})`
+                : `rgba(37,99,235,${alpha})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        }
+
+        nodes.forEach(n => {
+          n.a += 0.008;
+          const glow = 0.4 + Math.sin(n.a) * 0.3;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          ctx.fillStyle = n.gold
+            ? `rgba(201,168,76,${glow})`
+            : `rgba(96,165,250,${glow})`;
+          ctx.fill();
+
+          // Soft glow halo
+          const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 5);
+          g.addColorStop(0, n.gold ? `rgba(201,168,76,${glow * 0.2})` : `rgba(37,99,235,${glow * 0.15})`);
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r * 5, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.fill();
+
+          // Update position
+          n.x += n.vx; n.y += n.vy;
+          if (n.x < 0 || n.x > W) n.vx *= -1;
+          if (n.y < 0 || n.y > H) n.vy *= -1;
+
+          // Mouse repulsion
+          const mdx = n.x - mouseX, mdy = n.y - mouseY;
+          const md  = Math.sqrt(mdx * mdx + mdy * mdy);
+          if (md < 100) {
+            n.vx += (mdx / md) * 0.25;
+            n.vy += (mdy / md) * 0.25;
+          }
+          // Damping
+          n.vx *= 0.992; n.vy *= 0.992;
+        });
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ── HERO ORB CANVAS ───────────────────────────────── */
+  (function () {
+    const canvas = document.getElementById('heroOrbCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    function setup() {
+      const S = canvas.parentElement.offsetWidth;
+      canvas.width = canvas.height = S;
+
+      const CX = S / 2, CY = S / 2;
+      const nodes = Array.from({ length: 32 }, (_, i) => {
+        const radius = 40 + Math.random() * (S * 0.36);
+        const angle  = Math.random() * Math.PI * 2;
+        return {
+          angle,
+          radius,
+          speed: (Math.random() * 0.004 + 0.002) * (Math.random() < 0.5 ? 1 : -1),
+          r:     Math.random() * 2.5 + 1,
+          gold:  Math.random() < 0.3,
+          pulse: Math.random() * Math.PI * 2
+        };
+      });
+
+      function draw() {
+        ctx.clearRect(0, 0, S, S);
+
+        // Central nebula
+        const cg = ctx.createRadialGradient(CX, CY, 0, CX, CY, S * 0.22);
+        cg.addColorStop(0, 'rgba(37,99,235,0.35)');
+        cg.addColorStop(0.5, 'rgba(6,182,212,0.12)');
+        cg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.beginPath();
+        ctx.arc(CX, CY, S * 0.22, 0, Math.PI * 2);
+        ctx.fillStyle = cg;
+        ctx.fill();
+
+        // Draw connections between close nodes
+        const positions = nodes.map(n => ({
+          x: CX + Math.cos(n.angle) * n.radius,
+          y: CY + Math.sin(n.angle) * n.radius,
+          gold: n.gold
+        }));
+
+        for (let i = 0; i < positions.length; i++) {
+          for (let j = i + 1; j < positions.length; j++) {
+            const dx = positions[i].x - positions[j].x;
+            const dy = positions[i].y - positions[j].y;
+            const d  = Math.sqrt(dx * dx + dy * dy);
+            if (d < 110) {
+              const alpha = (1 - d / 110) * 0.4;
+              ctx.beginPath();
+              ctx.moveTo(positions[i].x, positions[i].y);
+              ctx.lineTo(positions[j].x, positions[j].y);
+              ctx.strokeStyle = (positions[i].gold || positions[j].gold)
+                ? `rgba(201,168,76,${alpha})`
+                : `rgba(37,99,235,${alpha})`;
+              ctx.lineWidth = 0.7;
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Draw nodes
+        nodes.forEach((n, i) => {
+          n.angle += n.speed;
+          n.pulse += 0.04;
+          const px   = CX + Math.cos(n.angle) * n.radius;
+          const py   = CY + Math.sin(n.angle) * n.radius;
+          const glow = 0.5 + Math.sin(n.pulse) * 0.3;
+
+          ctx.beginPath();
+          ctx.arc(px, py, n.r, 0, Math.PI * 2);
+          ctx.fillStyle = n.gold
+            ? `rgba(201,168,76,${glow})`
+            : `rgba(96,165,250,${glow})`;
+          ctx.fill();
+
+          const halo = ctx.createRadialGradient(px, py, 0, px, py, n.r * 6);
+          halo.addColorStop(0, n.gold ? `rgba(201,168,76,${glow * 0.25})` : `rgba(37,99,235,${glow * 0.2})`);
+          halo.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.beginPath();
+          ctx.arc(px, py, n.r * 6, 0, Math.PI * 2);
+          ctx.fillStyle = halo;
+          ctx.fill();
+        });
+
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    setup();
+    window.addEventListener('resize', () => {
+      if (canvas.parentElement) setup();
+    });
+  })();
+
+  /* ── CUSTOM CURSOR ──────────────────────────────────── */
+  const dot  = document.getElementById('curDot');
+  const ring = document.getElementById('curRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+  }, { passive: true });
+
+  (function raf() {
+    rx += (mx - rx) * .11; ry += (my - ry) * .11;
+    ring.style.left = rx + 'px'; ring.style.top  = ry + 'px';
+    requestAnimationFrame(raf);
+  })();
+
+  document.addEventListener('mousedown', () => dot.classList.add('click'));
+  document.addEventListener('mouseup',   () => dot.classList.remove('click'));
+  document.querySelectorAll('a, button, .card, .stack-card, .pill').forEach(el => {
+    el.addEventListener('mouseenter', () => { dot.classList.add('hover'); ring.classList.add('hover'); });
+    el.addEventListener('mouseleave', () => { dot.classList.remove('hover'); ring.classList.remove('hover'); });
+  });
+
+  /* ── NAV ────────────────────────────────────────────── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 55);
+  }, { passive: true });
+
+  /* ── MOBILE NAV ─────────────────────────────────────── */
+  const mobileNav = document.getElementById('mobileNav');
+  document.getElementById('navBurger').addEventListener('click', () => mobileNav.classList.add('open'));
+  document.getElementById('mobileClose').addEventListener('click', () => mobileNav.classList.remove('open'));
+  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileNav.classList.remove('open')));
+
+  /* ── SMOOTH SCROLL ──────────────────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      e.preventDefault();
+      t.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  /* ── SCROLL REVEAL ──────────────────────────────────── */
+  const sro = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) { en.target.classList.add('in'); sro.unobserve(en.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.sr').forEach(el => sro.observe(el));
+
+  /* ── COUNTER ANIMATION ──────────────────────────────── */
+  const statEls = document.querySelectorAll('.stat-n[data-target]');
+  const cro = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      cro.unobserve(en.target);
+      const el = en.target;
+      const target = +el.dataset.target;
+      const pre = el.dataset.prefix || '';
+      const suf = el.dataset.suffix || '';
+      const dur = 1900, t0 = performance.now();
+      (function tick(now) {
+        const p  = Math.min((now - t0) / dur, 1);
+        const ep = 1 - Math.pow(1 - p, 3);
+        el.textContent = pre + Math.round(ep * target) + suf;
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = pre + target + suf;
+      })(t0);
+    });
+  }, { threshold: 0.6 });
+  statEls.forEach(el => cro.observe(el));
+
+  /* ── MAGNETIC BUTTONS ───────────────────────────────── */
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r  = btn.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width  / 2);
+      const dy = e.clientY - (r.top  + r.height / 2);
+      btn.style.transform = `translate(${dx * .16}px, ${dy * .26}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+
+  /* ── SCROLL PROGRESS BAR ────────────────────────────── */
+  const scrollBar = document.getElementById('scroll-bar');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    scrollBar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+
+  /* ── ROTATING WORD ──────────────────────────────────── */
+  (function () {
+    const el = document.getElementById('wordRotate');
+    if (!el) return;
+    const words = ['legado.', 'futuro.', 'impacto.', 'transformación.', 'propósito.', 'historia.'];
+    let idx = 0;
+
+    function typeWord(word, cb) {
+      el.classList.add('typing');
+      el.textContent = '';
+      let i = 0;
+      const iv = setInterval(() => {
+        el.textContent += word[i++];
+        if (i >= word.length) { clearInterval(iv); setTimeout(cb, 100); }
+      }, 65);
+    }
+
+    function eraseWord(cb) {
+      const iv = setInterval(() => {
+        el.textContent = el.textContent.slice(0, -1);
+        if (!el.textContent.length) { clearInterval(iv); cb(); }
+      }, 38);
+    }
+
+    function cycle() {
+      setTimeout(() => {
+        eraseWord(() => {
+          idx = (idx + 1) % words.length;
+          typeWord(words[idx], () => { el.classList.remove('typing'); cycle(); });
+        });
+      }, 2600);
+    }
+
+    setTimeout(() => { el.classList.add('typing'); cycle(); }, 2400);
+  })();
+
+  /* ── 3D TILT ON CARDS ───────────────────────────────── */
+  document.querySelectorAll('.card, .stack-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r  = card.getBoundingClientRect();
+      const x  = (e.clientX - r.left) / r.width  - 0.5;
+      const y  = (e.clientY - r.top)  / r.height - 0.5;
+      card.style.transform = `translateY(-6px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+
+  /* ── FAQ ────────────────────────────────────────────── */
+  document.querySelectorAll('.faq-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item   = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('faq-open');
+      document.querySelectorAll('.faq-item.faq-open').forEach(el => el.classList.remove('faq-open'));
+      if (!isOpen) item.classList.add('faq-open');
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
