@@ -5,6 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aima Legacy — Marketing + Inteligencia Artificial</title>
   <meta name="description" content="Agencia de marketing digital e inteligencia artificial. Transformamos marcas con estrategia humana y tecnología IA para resultados extraordinarios.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#04040f">
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aimalegacy.es/">
+  <meta property="og:title" content="Aima Legacy — Marketing + Inteligencia Artificial">
+  <meta property="og:description" content="Transformamos marcas con estrategia humana e inteligencia artificial. Resultados extraordinarios, sin humo.">
+  <meta property="og:image" content="https://aimalegacy.es/logo-aima.jpg">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:site_name" content="Aima Legacy">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Aima Legacy — Marketing + IA">
+  <meta name="twitter:description" content="Transformamos marcas con estrategia humana e inteligencia artificial.">
+  <meta name="twitter:image" content="https://aimalegacy.es/logo-aima.jpg">
+
+  <!-- Favicon inline SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2304040f'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-size='18' font-weight='700' fill='%23c9a84c'%3EA%3C/text%3E%3C/svg%3E">
+
   <meta name="facebook-domain-verification" content="z6kvlovzv1u198fksncypqsdfktax2"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1091,12 +1112,99 @@
     from { transform: translateX(0); }
     to   { transform: translateX(-50%); }
   }
+
+  /* ═══════════════════════════════════════════════
+     FLOATING CTA BUTTON
+  ═══════════════════════════════════════════════ */
+  #floatCta {
+    position: fixed;
+    bottom: 80px; right: 28px;
+    z-index: 9990;
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    box-shadow: 0 4px 24px rgba(37,99,235,.45);
+    transition: all .3s var(--ease);
+    opacity: 0; pointer-events: none;
+    transform: scale(.85);
+  }
+  #floatCta.show { opacity: 1; pointer-events: all; transform: scale(1); }
+  #floatCta:hover { box-shadow: 0 8px 36px rgba(37,99,235,.65); transform: scale(1.08); }
+
+  /* ═══════════════════════════════════════════════
+     BACK TO TOP
+  ═══════════════════════════════════════════════ */
+  #backTop {
+    position: fixed;
+    bottom: 24px; right: 28px;
+    z-index: 9990;
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--white-muted);
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    transition: all .3s var(--ease);
+    opacity: 0; pointer-events: none;
+    transform: scale(.85);
+  }
+  #backTop.show { opacity: 1; pointer-events: all; transform: scale(1); }
+  #backTop:hover { border-color: var(--gold-hover); color: var(--gold); background: var(--gold-dim); }
+
+  /* ═══════════════════════════════════════════════
+     SELECTION COLOR
+  ═══════════════════════════════════════════════ */
+  ::selection { background: rgba(201,168,76,.25); color: var(--white); }
+
+  /* ═══════════════════════════════════════════════
+     FOCUS VISIBLE ACCESSIBILITY
+  ═══════════════════════════════════════════════ */
+  :focus-visible {
+    outline: 2px solid var(--blue-light);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* ═══════════════════════════════════════════════
+     HERO BADGE PULSE RING
+  ═══════════════════════════════════════════════ */
+  .live-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid #22c55e;
+    animation: pingRing 2s ease-out infinite;
+  }
+  .live-dot { position: relative; }
+  @keyframes pingRing {
+    0%   { opacity: .6; transform: scale(1); }
+    100% { opacity: 0;  transform: scale(2.5); }
+  }
   </style>
 </head>
 <body>
 
 <!-- ─── SCROLL PROGRESS ─────────────────────── -->
 <div id="scroll-bar"></div>
+
+<!-- ─── FLOATING CTA ────────────────────────── -->
+<a href="mailto:hola@aimalegacy.es" id="floatCta" aria-label="Contactar" title="Escríbenos">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+  </svg>
+</a>
+
+<!-- ─── BACK TO TOP ──────────────────────────── -->
+<button id="backTop" aria-label="Volver arriba">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
 
 <!-- ─── CUSTOM CURSOR ───────────────────────── -->
 <div class="cur-dot"  id="curDot"></div>
@@ -1494,7 +1602,7 @@
       </h2>
       <p style="margin-top:22px; font-size:.88rem; color:var(--white-muted); line-height:1.8; max-width:300px;">
         ¿Tienes más preguntas? Escríbenos a<br>
-        <a href="mailto:hola@aimalegacy.com" style="color:var(--blue-light);">hola@aimalegacy.com</a>
+        <a href="mailto:hola@aimalegacy.es" style="color:var(--blue-light);">hola@aimalegacy.es</a>
       </p>
     </div>
 
@@ -1569,7 +1677,7 @@
       Hablemos hoy y diseñemos juntos la estrategia que tu marca merece.
     </p>
     <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
-      <a href="mailto:hola@aimalegacy.com" class="btn btn-blue btn-lg">
+      <a href="mailto:hola@aimalegacy.es" class="btn btn-blue btn-lg">
         Quiero una Estrategia Gratis &nbsp;→
       </a>
       <p class="cta-fine">Sin compromisos. Primera consulta <span>100% gratuita.</span></p>
@@ -1610,26 +1718,26 @@
     <div>
       <p class="col-hd">Síguenos</p>
       <div class="socials">
-        <a href="#" class="soc" aria-label="Instagram">
+        <a href="https://instagram.com/aimalegacy" target="_blank" rel="noopener noreferrer" class="soc" aria-label="Instagram">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5"/>
             <circle cx="12" cy="12" r="4"/>
             <circle cx="17.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/>
           </svg>
         </a>
-        <a href="#" class="soc" aria-label="LinkedIn">
+        <a href="https://linkedin.com/company/aimalegacy" target="_blank" rel="noopener noreferrer" class="soc" aria-label="LinkedIn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/>
             <rect x="2" y="9" width="4" height="12"/>
             <circle cx="4" cy="4" r="2"/>
           </svg>
         </a>
-        <a href="#" class="soc" aria-label="X">
+        <a href="https://x.com/aimalegacy" target="_blank" rel="noopener noreferrer" class="soc" aria-label="X / Twitter">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
           </svg>
         </a>
-        <a href="#" class="soc" aria-label="TikTok">
+        <a href="https://tiktok.com/@aimalegacy" target="_blank" rel="noopener noreferrer" class="soc" aria-label="TikTok">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.24 8.24 0 004.83 1.56V6.81a4.85 4.85 0 01-1.06-.12z"/>
           </svg>
@@ -2004,6 +2112,20 @@
       document.querySelectorAll('.faq-item.faq-open').forEach(el => el.classList.remove('faq-open'));
       if (!isOpen) item.classList.add('faq-open');
     });
+  });
+
+  /* ── FLOATING CTA + BACK TO TOP ─────────────────────── */
+  const floatCta = document.getElementById('floatCta');
+  const backTop  = document.getElementById('backTop');
+
+  window.addEventListener('scroll', () => {
+    const show = window.scrollY > 400;
+    floatCta.classList.toggle('show', show);
+    backTop.classList.toggle('show', show);
+  }, { passive: true });
+
+  backTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
 })();
